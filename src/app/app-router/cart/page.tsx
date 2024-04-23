@@ -1,7 +1,6 @@
+import { TransactionInitializeDocument } from "@/generated/graphql";
 import { getCheckoutFromCookiesOrRedirect } from "@/lib/app-router";
-import { CheckoutCompleteDocument, TransactionInitializeDocument } from "@/generated/graphql";
 import { executeGraphQL, klarnaAppId } from "@/lib/common";
-import { KlarnaComponent } from "@/ui/components/KlarnaComponent";
 import { redirect } from "next/navigation";
 
 export default async function CartPage() {
@@ -32,21 +31,8 @@ export default async function CartPage() {
 	const klarnaData = transaction.transactionInitialize?.data as
 		| undefined
 		| {
-				klarnaSessionResponse: {
-					client_token: string;
-					payment_method_categories?:
-						| {
-								asset_urls?:
-									| {
-											descriptive?: string | undefined;
-											standard?: string | undefined;
-									  }
-									| undefined;
-								identifier?: string | undefined;
-								name?: string | undefined;
-						  }[]
-						| undefined;
-					session_id: string;
+				klarnaHppResponse: {
+					redirectUrl: string;
 				};
 		  };
 
@@ -59,33 +45,8 @@ export default async function CartPage() {
 		);
 	}
 
-	console.log({ x: klarnaData.klarnaSessionResponse.payment_method_categories });
+	console.log(transaction);
 
-	return (
-		<div>
-			<pre>{JSON.stringify(klarnaData, null, 2)}</pre>
-			<KlarnaComponent
-				klarnaSession={klarnaData.klarnaSessionResponse}
-				onComplete={async () => {
-					"use server";
-					console.log("onComplete");
-					const result = await executeGraphQL({
-						query: CheckoutCompleteDocument,
-						variables: {
-							checkoutId: checkout.id,
-						},
-					});
-					if (result.checkoutComplete?.errors.length) {
-						console.error(result.checkoutComplete.errors);
-					} else if (!result.checkoutComplete?.order) {
-						console.error("No order returned");
-					} else if (result.checkoutComplete.order.errors.length) {
-						console.error(result.checkoutComplete.order.errors);
-					} else {
-						redirect(`/app-router/cart/success/${result.checkoutComplete.order.id}`);
-					}
-				}}
-			/>
-		</div>
-	);
+	// redirect to redirectUrl
+	redirect(klarnaData.klarnaHppResponse.redirectUrl);
 }
