@@ -13,7 +13,7 @@ interface GraphQlError {
 }
 type GraphQlErrorRespone<T> = { data: T } | { errors: readonly GraphQlError[] };
 
-const endpoint = process.env.SALEOR_API_URL;
+const endpoint = process.env.NEXT_PUBLIC_SALEOR_API_URL;
 
 export async function executeGraphQL<Result, Variables>({
 	query,
@@ -28,7 +28,7 @@ export async function executeGraphQL<Result, Variables>({
 	? { variables?: never }
 	: { variables: Variables })): Promise<Result> {
 	if (!endpoint) {
-		throw new Error("Missing SALEOR_API_URL");
+		throw new Error("Missing NEXT_PUBLIC_SALEOR_API_URL");
 	}
 
 	const result = await fetch(endpoint, {

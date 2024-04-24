@@ -1,7 +1,9 @@
-import { TransactionInitializeDocument } from "@/generated/graphql";
+"use server";
+
 import { getCheckoutFromCookiesOrRedirect } from "@/lib/app-router";
-import { executeGraphQL, klarnaAppId } from "@/lib/common";
-import { redirect } from "next/navigation";
+import { klarnaAppId } from "@/lib/common";
+import React from "react";
+import { Transaction } from "./Transaction";
 
 export default async function CartPage() {
 	const checkout = await getCheckoutFromCookiesOrRedirect();
@@ -19,34 +21,5 @@ export default async function CartPage() {
 		);
 	}
 
-	const transaction = await executeGraphQL({
-		query: TransactionInitializeDocument,
-		variables: {
-			checkoutId: checkout.id,
-			data: {},
-		},
-		cache: "no-store",
-	});
-
-	const klarnaData = transaction.transactionInitialize?.data as
-		| undefined
-		| {
-				klarnaHppResponse: {
-					redirectUrl: string;
-				};
-		  };
-
-	if (transaction.transactionInitialize?.errors.length ?? !klarnaData) {
-		return (
-			<div className="text-red-500">
-				<p>Failed to initialize Klarna transaction</p>
-				<pre>{JSON.stringify(transaction, null, 2)}</pre>
-			</div>
-		);
-	}
-
-	console.log(transaction);
-
-	// redirect to redirectUrl
-	redirect(klarnaData.klarnaHppResponse.redirectUrl);
+	return <Transaction checkoutId={checkout.id} />;
 }
