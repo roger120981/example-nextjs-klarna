@@ -1,5 +1,5 @@
 try {
-	var url = new URL(process.env.SALEOR_API_URL);
+	var url = new URL(process.env.NEXT_PUBLIC_SALEOR_API_URL);
 } catch {}
 
 /** @type {import('next').NextConfig} */

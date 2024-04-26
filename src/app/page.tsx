@@ -1,7 +1,7 @@
 export default function RootPage() {
 	return (
 		<div>
-			<h1 className="mb-8 text-5xl font-bold">Saleor Stripe Next.js example</h1>
+			<h1 className="mb-8 text-5xl font-bold">Saleor Klarna Next.js example</h1>
 			<p className="mb-4 text-2xl">Select one of the approaches:</p>
 			<ul className="flex flex-row flex-wrap gap-x-4">
 				<li>
