@@ -10,6 +10,7 @@ export const Transaction = ({ checkoutId }: { checkoutId: string }) => {
 
 	const createTransaction = useCallback(async () => {
 		const url = window.location.href;
+		const success = `${url}/success`;
 
 		const transaction = await executeGraphQL({
 			query: TransactionInitializeDocument,
@@ -17,7 +18,7 @@ export const Transaction = ({ checkoutId }: { checkoutId: string }) => {
 				checkoutId: checkoutId,
 				data: {
 					merchantUrls: {
-						success: url + "/success",
+						success,
 					},
 				},
 			},

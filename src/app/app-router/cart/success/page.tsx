@@ -4,30 +4,29 @@ import { executeGraphQL } from "@/lib/common";
 import { notFound } from "next/navigation";
 
 export default async function CartSuccessPage({
-	params,
 	searchParams,
 }: {
-	params: { transactionId: string };
-	searchParams: { authorization_token: string | undefined };
+	searchParams: { authorization_token: string | undefined; transaction_id: string };
 }) {
 	const checkout = await getCheckoutFromCookiesOrRedirect();
 
-	if (!params.transactionId) {
-		notFound();
+	if (!searchParams.transaction_id) {
+		throw new Error("transaction_id search param is missing");
 	}
-
-	const transactionId = decodeURIComponent(params.transactionId);
 
 	if (!searchParams.authorization_token) {
-		throw new Error("Authorization token is missing");
+		throw new Error("authorization_token search param is missing");
 	}
+
+	const transactionId = decodeURIComponent(searchParams.transaction_id);
+	const authorizationToken = searchParams.authorization_token;
 
 	await executeGraphQL({
 		query: TransactionProcessDocument,
 		variables: {
 			transactionId,
 			data: {
-				authorizationToken: searchParams.authorization_token,
+				authorizationToken,
 			},
 		},
 		cache: "no-store",
